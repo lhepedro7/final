@@ -39,7 +39,7 @@ const criarBanco = async () => {
     )
                     
         `);
-    console.log("A tabela das roupas foi criada com sucesso")
+    console.log("A tabela das roupas foi criada com sucesso");
 
     //Insert - C do CRUD - cREATE
 
@@ -50,7 +50,8 @@ const criarBanco = async () => {
     if (check_alimentos.total === 0) {
         await db.exec(`
         INSERT INTO alimentos(alimento, data, quantidade, perecivel, nao_perecivel) 
-        VALUES ("sucrilhos", "dia 17", "1", "nao", "sim"), ( "leite", "10/07/2026", "10", "sim", "nao")
+        VALUES ("sucrilhos", "17/07/27", "1", "nao", "sim"), ( "leite", "10/07/26", "10", "sim", "nao"), ("arroz", "10/02/27", "5", "nao", "sim"), 
+        ("biscoito", "11/11/27", "5", "nao", "sim")
         `);
 
     } else {};
@@ -62,7 +63,8 @@ const criarBanco = async () => {
     if (check_roupas.total === 0) {
         await db.exec(`
             INSERT INTO roupas(peca, tamanho, quantidade, estado, algodao, jeans)
-            VALUES ("moletom", "M", "2", "bom", "sim", "nao"), ("calça", "P", "5", "bom", "nao", "sim")
+            VALUES ("moletom", "M", "2", "bom", "sim", "nao"), ("calça", "P", "5", "bom", "nao", "sim"), ("blusa", "M", "5", "bom", "sim", "nao"), 
+            ("short", "P", "2", "bom", "nao", "sim")
             `)
 
     } else{};
@@ -85,28 +87,34 @@ const criarBanco = async () => {
         WHERE perecivel = "sim"
         `);
 
-console.log("Todos os alimentos pereciveis foram entregues");
+console.log("Todos os alimentos pereciveis estao para entrega");
 
 await db.run(`
     UPDATE roupas
     SET status_entrega ="Entregue"
-    WHERE estado = "bom"
-    `)
+    WHERE algodao = "sim"
+    `);
 
-    console.log("As peças de roupas em bom estado foram entregues");
+    console.log("As peças de roupas de algodao estão para entrega");
 
 //DELETE
 await db.run(`DELETE FROM alimentos WHERE id = 2`);
 
-console.log("O registro 2 foi removido")
+console.log("O registro 2 foi removido");
+
+await db.run(`DELETE FROM roupas WHERE algodao = "entregue"`);
+
+console.log("As roupas que estão prontos para entrega doram deletados");
 
 //Relatório
-console.log("Relatório")
+console.log("Relatório");
 const relatório_alimentos = await db.all(`SELECT * FROM alimentos`);
+console.table(relatório_alimentos)
 
-const relatório_roupas = await db.all(`SELECT * FROM roupas`)
+const relatório_roupas = await db.all(`SELECT * FROM roupas`);
+console.table(relatório_roupas)
 
-
-
+return db;
 };
-criarBanco();
+
+module.exports = {criarBanco}
